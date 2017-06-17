@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FtpServerPro", "FtpServerPro\FtpServerPro.vcxproj", "{F74B604B-4E7D-4FD4-96F3-DC0FCC3B0834}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FtpClientPor", "FtpClientPor\FtpClientPor.vcxproj", "{4945FCDD-3DBD-4D1B-8001-857C6CB78549}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{F74B604B-4E7D-4FD4-96F3-DC0FCC3B0834}.Release|x64.Build.0 = Release|x64
 		{F74B604B-4E7D-4FD4-96F3-DC0FCC3B0834}.Release|x86.ActiveCfg = Release|Win32
 		{F74B604B-4E7D-4FD4-96F3-DC0FCC3B0834}.Release|x86.Build.0 = Release|Win32
+		{4945FCDD-3DBD-4D1B-8001-857C6CB78549}.Debug|x64.ActiveCfg = Debug|x64
+		{4945FCDD-3DBD-4D1B-8001-857C6CB78549}.Debug|x64.Build.0 = Debug|x64
+		{4945FCDD-3DBD-4D1B-8001-857C6CB78549}.Debug|x86.ActiveCfg = Debug|Win32
+		{4945FCDD-3DBD-4D1B-8001-857C6CB78549}.Debug|x86.Build.0 = Debug|Win32
+		{4945FCDD-3DBD-4D1B-8001-857C6CB78549}.Release|x64.ActiveCfg = Release|x64
+		{4945FCDD-3DBD-4D1B-8001-857C6CB78549}.Release|x64.Build.0 = Release|x64
+		{4945FCDD-3DBD-4D1B-8001-857C6CB78549}.Release|x86.ActiveCfg = Release|Win32
+		{4945FCDD-3DBD-4D1B-8001-857C6CB78549}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
