@@ -15,6 +15,8 @@
 #include <vector>
 #include <set>
 #include <sstream>
+#include <cstdio>
+#include <conio.h>
 
 #pragma comment (lib, "Ws2_32.lib")  
 #pragma comment (lib, "Mswsock.lib")  
@@ -187,6 +189,22 @@ int main()
 			}
 			if (num == 0)
 				cout << "empty directory\n" << endl;
+		}
+		else if (info[0] == "331") {     //µÇÂ¼ºÍ×¢²áÊ±ÊäÈëÃÜÂë
+			char ch = 'a';
+			char pass[100] = "";
+			int i = 0;
+			cout << str << "\n" << "Password:" << endl;
+			while (ch != '\r') {
+				ch = _getch();
+				pass[i++] = ch;
+			}
+			send(ConnectSocket, pass, 100, 0);
+			recv(ConnectSocket, pass, 100, 0);
+			cout << pass << "\n" << endl;
+		}
+		else if (info[0] == "250") {//change directory
+			cout << str << "\n" << endl;
 		}
 		else {
 			cout << str << "\n" << endl;
