@@ -22,7 +22,7 @@
 #pragma comment (lib, "Mswsock.lib")  
 #pragma comment (lib, "AdvApi32.lib")  
 
-#define DEFAULT_PORT "27015"  
+#define DEFAULT_PORT "10086"  
 #define DEFAULT_BUFLEN 512  
 
 using namespace std;
@@ -60,11 +60,11 @@ void RecvFile(SOCKET &connectSocket, const char fileName[DEFAULT_BUFLEN]) {
 		num = recv(connectSocket, temp, DEFAULT_BUFLEN, 0);
 		fwrite(temp, 1, num, fp);
 		if (num < DEFAULT_BUFLEN) {
-			cout << "finished\n" << endl;
+			recv(connectSocket, temp, 100, 0);
+			cout << temp << "\n" << endl;
 			fclose(fp);
 			return;
 		}
-		
 	}
 	fclose(fp);
 }
@@ -89,6 +89,10 @@ void SendFile(SOCKET &clientSocket, string &fileName) {
 	fclose(fp);
 }
 
+inline void LowerCommand(string &command) {
+	for (int i = 0; i < command.size(); i++)
+		command[i] = tolower(command[i]);
+}
 
 int main()
 {
@@ -160,28 +164,33 @@ int main()
 
 	recv(ConnectSocket, str, 100, 0);
 	cout << str << endl;
-	
+	//处理命令
 	vector<string> info;
+	vector<string> cinfo;
 	string command;
 	cin.ignore(1, '\n');
 	while (true) {
 		cout << "ftp>";
 		getline(cin, command);
+		LowerCommand(command);
 		send(ConnectSocket, command.data(), sizeof(command), 0);
 		recv(ConnectSocket, str, sizeof(str), 0);
+		cinfo = split(command, " ");
 		info = split(str, " ");
 		if (info[0] == "file") {
 			RecvFile(ConnectSocket, info[1].data());
 		}
-		else if (info[0] == "exit") {
+		else if (info[0] == "221") {
+			cout << str << endl;
 			break;
 		}
-		else if (info[0] == "upload") {
-			SendFile(ConnectSocket, info[1]);
+		else if (info[0] == "150") {  //发送文件
+			cout << str << endl;
+			SendFile(ConnectSocket, cinfo[1]);
 			recv(ConnectSocket, str, 100, 0);
 			cout << str << "\n" << endl;
 		}
-		else if (info[0] == "list") {
+		else if (info[0] == "list") {  //得到文件列表
 			int num = atoi(info[1].data());
 			for (int i = 0; i < num; i++) {
 				recv(ConnectSocket, str, 100, 0);
@@ -189,6 +198,8 @@ int main()
 			}
 			if (num == 0)
 				cout << "empty directory\n" << endl;
+			recv(ConnectSocket, str, 100, 0);
+			cout << str << "\n" << endl;
 		}
 		else if (info[0] == "331") {     //登录和注册时输入密码
 			char ch = 'a';
@@ -203,7 +214,7 @@ int main()
 			recv(ConnectSocket, pass, 100, 0);
 			cout << pass << "\n" << endl;
 		}
-		else if (info[0] == "250") {//change directory
+		else if (info[0] == "200") {//change directory
 			cout << str << "\n" << endl;
 		}
 		else {

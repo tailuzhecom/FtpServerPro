@@ -25,7 +25,7 @@
 
 #define bzero(a, b) memset(a, 0, b)
 
-#define DEFAULT_PORT "27015"  
+#define DEFAULT_PORT "10086"  
 #define DEFAULT_BUFLEN 512  
 
 #define FOR(end) \
@@ -39,18 +39,20 @@ set<string> onlineUser;
 mutex mtx;
 
 //command help
-map<string, string> help = { {"getfile", " getfile + [filename]     function: download file[filename] in the current path"},
-							{"login", " login + [username] + [password]        function: user login"},
-							{"upload", " upload + [filename]       function: upload file[filename] in the current path"},
+map<string, string> help = { {"get", " getfile + [filename]     function: download file[filename] in the current path"},
+							{"user", " login + [username] + [password]        function: user login"},
+							{"send", " upload + [filename]       function: upload file[filename] in the current path"},
 							{"list", " function: list the file in the current in the current path"},
+							{ "dir", " function: list the file in the current in the current path" },
 							{"quit", " function: close the ftp client you are running"},
 							{ "exit", " function: close the ftp client you are running" },
+							{ "bye", " function: close the ftp client you are running" },
 							{"register", " register + [username] + [password]      function: create a new account"},
-							{"cd", " cd + [targetdir]     function: change the current path to target directory"},
+							{"cwd", " cd + [targetdir]     function: change the current path to target directory"},
 							{"pwd", " function: print the current path"},
 							{"all", " all commands:\ncd exit getfile list login pwd quit register upload"},
-							{"rmdir", " remove + [dirname]       function: remove directory"},
-							{"rmfile", " remove + [filename]       function: remove file"} };
+							{"rmd", " remove + [dirname]       function: remove directory"},
+							{"dele", " remove + [filename]       function: remove file"} };
 
 
 //返回当前时间字符串
@@ -158,6 +160,7 @@ void SendFile(SOCKET &clientSocket, string &fileName) {
 		num = fread(temp, 1, DEFAULT_BUFLEN, fp);
 		send(clientSocket, temp, num, 0);
 	}
+	send(clientSocket, "226 Transfer complete.", 100, 0);
 	Log(split(fileName, "\\")[0] + " download the file " + fileName + " successfully");
 	fclose(fp);
 }
@@ -198,12 +201,8 @@ int TimeToString(string &strDateStr, const time_t &timeData)
 
 	struct tm *p;
 	p = localtime(&timeData);
-
 	p->tm_year = p->tm_year + 1900;
-
 	p->tm_mon = p->tm_mon + 1;
-
-
 	snprintf(chTmp, sizeof(chTmp), "%04d-%02d-%02d",
 		p->tm_year, p->tm_mon, p->tm_mday);
 
@@ -250,6 +249,7 @@ void GetFileList(SOCKET clientSocket, string currentPath) {
 	send(clientSocket, ("list " + to_string(static_cast<int>(fileListVec.size()))).data(), 100, 0);
 	for (auto i : fileListVec)
 		send(clientSocket, i.data(), 100, 0);
+	send(clientSocket, "226 Directory send OK.", 100, 0);
 	Log(split(currentPath, "\\")[0] + " get the file list in the path: " + currentPath);
 }
 
@@ -262,15 +262,15 @@ void ChangeDirectory(string &currentPath, string &targetDir, SOCKET clientSocket
 			currentPath = "";
 			for (int i = 0; i < str.size() - 2; i++)
 				currentPath += str[i] + "\\";
-			send(clientSocket, ("250 Directory changed to " + currentPath).data(), 100, 0);
+			send(clientSocket, ("200 Directory changed to " + currentPath).data(), 100, 0);
 		}
 		else {
-			send(clientSocket, ("250 Directory changed to " + currentPath).data(), 100, 0);
+			send(clientSocket, ("200 Directory changed to " + currentPath).data(), 100, 0);
 		}
 	}
 	else if (targetDir == "~") {  //返回根目录
 		currentPath = split(currentPath, "\\")[0] + "\\";
-		send(clientSocket, ("250 Directory changed to " + currentPath).data(), 100, 0);
+		send(clientSocket, ("200 Directory changed to " + currentPath).data(), 100, 0);
 	}
 	else {     //进入target目录
 		vector<string> vec;
@@ -281,7 +281,7 @@ void ChangeDirectory(string &currentPath, string &targetDir, SOCKET clientSocket
 				flag = true;
 		if (flag) {
 			currentPath += targetDir + "\\";
-			send(clientSocket, ("250 Directory changed to " + currentPath).data(), 100, 0);
+			send(clientSocket, ("200 Directory changed to " + currentPath).data(), 100, 0);
 		}
 		else
 			send(clientSocket, "no such directory", 100, 0);
@@ -289,7 +289,7 @@ void ChangeDirectory(string &currentPath, string &targetDir, SOCKET clientSocket
 	Log(split(currentPath, "\\")[0] + " cd to the path : " + currentPath);
 }
 
-//TODO ftp规范化
+//TODO ftp规范化  mkdir rmdir rmfile
 //socket connection
 void Conn(SOCKET clientSocket, map<string, string> userList) {
 	int loginStatus = 0;
@@ -300,9 +300,12 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 		printf("server accept failed: %ld\n", WSAGetLastError());
 		return;
 	}
-
-	send(clientSocket, "220 Ftp Server ready...", 100, 0);
-
+	char ss[100];
+	//recv(clientSocket, ss, 100, 0);
+	send(clientSocket, "220 Ftp Server ready...\r\n", 100, 0);
+	//recv(clientSocket, ss, 100, 0);
+	//recv(clientSocket, ss, 100, 0);
+	//send(clientSocket, "421 Ftp Server ready...\n", 100, 0);
 	char command[100];
 	vector<string> info;
 	while (true) {
@@ -339,66 +342,72 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 			else
 				send(clientSocket, "don't attempt to create a new account after logging in", 100, 0);
 		}
-		else if ((info[0] == "exit" || info[0] == "quit") && info.size() == 1) {   //用户退出
-			send(clientSocket, "exit", 100, 0);
-			if(userName != "")
+		else if ((info[0] == "exit" || info[0] == "quit" || info[0] == "bye") && info.size() == 1) {   //用户退出
+			send(clientSocket, "221 Goodbye.", 100, 0);
+			if (userName != "")
 				Log(userName + " log out");
 			onlineUser.erase(userName);
 			break;
 		}
 		else {
 			if (loginStatus) {   //是否已登录
-				if (info[0] == "getfile" && info.size() == 2) {    //下载
+				if (info[0] == "get" && info.size() == 2) {    //下载
 					SendFile(clientSocket, currentPath + info[1]);
 				}
-				else if (info[0] == "upload" && info.size() == 2) {    //上传
-					send(clientSocket, ("upload " + info[1]).data(), 100, 0);
+				else if (info[0] == "send" && info.size() == 2) {    //上传
+					send(clientSocket, "150 Ok to send data.", 100, 0);
 					char temp[105];
 					recv(clientSocket, temp, 100, 0);
 					if (strcmp(temp, "ok") == 0 && RecvFile(clientSocket, (userName + "\\" + info[1]).data(), userName))
-						send(clientSocket, "upload success", 100, 0);
+						send(clientSocket, "226 Transfer complete.", 100, 0);
 					else
 						send(clientSocket, "upload failed", 100, 0);
 				}
-				else if (info[0] == "list" && info.size() == 1) {   //获取文件列表
+				else if ((info[0] == "list" || info[0] == "dir") && info.size() == 1) {   //获取文件列表
 					GetFileList(clientSocket, currentPath);
 				}
 				else if (info[0] == "pwd" && info.size() == 1) {  //打印当前目录
 					send(clientSocket, currentPath.data(), 100, 0);
 				}
-				else if (info[0] == "cd" && info.size() == 2) {   //改变当前目录
+				else if (info[0] == "cwd" && info.size() == 2) {   //改变当前目录
 					ChangeDirectory(currentPath, info[1], clientSocket);
 				}
 				else if (info[0] == "help" && info.size() == 2) {  //帮助
 					send(clientSocket, help[info[1]].data(), 100, 0);
 				}
-				else if (info[0] == "mkdir" && info.size() == 2) {
-					_mkdir((currentPath + info[1]).data());
-					Log(userName + " makes directory " + currentPath + " " + info[1]);
-					send(clientSocket, "mkdir success", 100, 0);
+				else if (info[0] == "mkd" && info.size() == 2) {   //创建文件夹
+					if (!_mkdir((currentPath + info[1]).data())) {
+						Log(userName + " makes directory " + currentPath + " " + info[1]);
+						send(clientSocket, ("521 \"" + currentPath + info[1] + "\" directory created").data(), 100, 0);
+					}
+					else
+						send(clientSocket, "521 taking no action.", 100, 0);
 				}
-				else if (info[0] == "rmfile" && info.size() == 2) {       //删除文件
+				else if (info[0] == "dele" && info.size() == 2) {       //删除文件
 					if (!remove((currentPath + info[1]).data())) {
 						Log(userName + " remove file " + currentPath + " " + info[1]);
-						send(clientSocket, "remove file success", 100, 0);
+						send(clientSocket, "250 Delete file success.", 100, 0);
 					}
 					else
-						send(clientSocket, "no such file", 100, 0);
+						send(clientSocket, "500 No such file.", 100, 0);
 				}
-				else if (info[0] == "rmdir" && info.size() == 2) {     //删除文件夹  _rmdir 和 remove 返回0时代表删除成功
+				else if (info[0] == "rmd" && info.size() == 2) {     //删除文件夹  _rmdir 和 remove 返回0时代表删除成功
 					if (!_rmdir((currentPath + info[1]).data())) {
 						Log(userName + " remove directory " + currentPath + " " + info[1]);
-						send(clientSocket, "remove directory success", 100, 0);
+						send(clientSocket, "250 Remove directory success.", 100, 0);
 					}
 					else
-						send(clientSocket, "no such directory", 100, 0);
+						send(clientSocket, "500 No such directory.", 100, 0);
 				}
 				else if (help[info[0]] == "") {  //不存在该命令
-					send(clientSocket, "no this command", sizeof("no this command") + 1, 0);
+					send(clientSocket, "No this command.", 100, 0);
 				}
 			}
-			else if (info[0] != "user" && info[0] != "register" || !help[info[0]].empty()) {
-				send(clientSocket, "you are not logged in", sizeof("you are not logged in") + 1, 0);
+			else if (info[0] != "user" && info[0] != "register" && !help[info[0]].empty()) {
+				send(clientSocket, "You are not logged in.", 100, 0);
+			}
+			else if (help[info[0]] == "") {  //不存在该命令
+				send(clientSocket, "No this command.", 100, 0);
 			}
 		}
 	}
@@ -478,8 +487,6 @@ int main() {
 		WSACleanup();
 		return 1;
 	}
-
-
 	// accept a connection  
 	sockaddr_in client_addr;
 	int nlen = 0;
