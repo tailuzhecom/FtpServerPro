@@ -240,3 +240,8 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+FtpServerPro/tailuzhecom/ac.txt
+FtpServerPro/tailuzhecom/kd.jpg
+FtpServerPro/tailuzhecom/test.jpg
+FtpClientPor/kd.jpg
+FtpClientPor/ac.txt

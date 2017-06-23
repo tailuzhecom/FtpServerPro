@@ -24,10 +24,8 @@
 #pragma comment (lib, "Ws2_32.lib")  
 
 #define bzero(a, b) memset(a, 0, b)
-
 #define DEFAULT_PORT "10086"  
 #define DEFAULT_BUFLEN 512  
-
 #define FOR(end) \
 for(int i = 0; i < end; i++)
 
@@ -160,7 +158,8 @@ void SendFile(SOCKET &clientSocket, string &fileName) {
 		num = fread(temp, 1, DEFAULT_BUFLEN, fp);
 		send(clientSocket, temp, num, 0);
 	}
-	send(clientSocket, "226 Transfer complete.", 100, 0);
+	this_thread::sleep_for(std::chrono::milliseconds(100));
+	send(clientSocket, "226 Transfer complete.", 100, 0);  //延迟防止因为消息和文件发送间隔过短而导致的缓冲区尚未发送出去等待过程中消息与文件信息合并一起send出去
 	Log(split(fileName, "\\")[0] + " download the file " + fileName + " successfully");
 	fclose(fp);
 }
@@ -174,6 +173,7 @@ inline void LoadUserList(map<string, string> &userList) {
 	}
 	fs.close();
 }
+
 
 //用户注册
 inline void CreateUser(const string &userName, const string &passwd, map<string, string> &userList, SOCKET clientSocket) {
@@ -301,11 +301,7 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 		return;
 	}
 	char ss[100];
-	//recv(clientSocket, ss, 100, 0);
 	send(clientSocket, "220 Ftp Server ready...\r\n", 100, 0);
-	//recv(clientSocket, ss, 100, 0);
-	//recv(clientSocket, ss, 100, 0);
-	//send(clientSocket, "421 Ftp Server ready...\n", 100, 0);
 	char command[100];
 	vector<string> info;
 	while (true) {

@@ -60,7 +60,7 @@ void RecvFile(SOCKET &connectSocket, const char fileName[DEFAULT_BUFLEN]) {
 		num = recv(connectSocket, temp, DEFAULT_BUFLEN, 0);
 		fwrite(temp, 1, num, fp);
 		if (num < DEFAULT_BUFLEN) {
-			recv(connectSocket, temp, 100, 0);
+			recv(connectSocket, temp, DEFAULT_BUFLEN, 0);
 			cout << temp << "\n" << endl;
 			fclose(fp);
 			return;
@@ -90,7 +90,7 @@ void SendFile(SOCKET &clientSocket, string &fileName) {
 }
 
 inline void LowerCommand(string &command) {
-	for (int i = 0; i < command.size(); i++)
+	for (int i = 0; i < command.size() && command[i] != ' '; i++)
 		command[i] = tolower(command[i]);
 }
 
@@ -112,12 +112,10 @@ int main()
 		printf("client WSAStartup failed: %d\n", iResult);
 		return 1;
 	}
-
 	ZeroMemory(&hints, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
-
 	// resolve the server address and port, argv[1] is server name  
 	iResult = getaddrinfo(temp, DEFAULT_PORT, &hints, &result);
 	if (iResult != 0)
@@ -126,8 +124,6 @@ int main()
 		WSACleanup(); // terminate use of WS2_32.dll  
 		return 1;
 	}
-
-
 	SOCKET ConnectSocket = INVALID_SOCKET;
 	for (ptr = result; ptr != NULL; ptr = ptr->ai_next)
 	{
@@ -139,7 +135,6 @@ int main()
 			WSACleanup();
 			return 1;
 		}
-
 		// connect to server  
 		iResult = connect(ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 		if (iResult == SOCKET_ERROR)
@@ -150,7 +145,6 @@ int main()
 		}
 		break;
 	}
-
 	freeaddrinfo(result);
 	if (ConnectSocket == INVALID_SOCKET)
 	{
@@ -158,10 +152,8 @@ int main()
 		WSACleanup();
 		return 1;
 	}
-
 	int num = 0;
 	char str[100];
-
 	recv(ConnectSocket, str, 100, 0);
 	cout << str << endl;
 	//´¦ÀíÃüÁî
@@ -221,9 +213,7 @@ int main()
 			cout << str << "\n" << endl;
 		}
 	}
-	
 	closesocket(ConnectSocket);
 	WSACleanup();
-
 	return 0;
 }
