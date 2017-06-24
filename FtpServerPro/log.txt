@@ -1,0 +1,82 @@
+
+
+create a new account LBJ       Sat Jun 24 16:29:11 2017
+
+LBJ login       Sat Jun 24 16:29:22 2017
+
+LBJ log out       Sat Jun 24 16:29:32 2017
+
+tailuzhecom login       Sat Jun 24 16:30:38 2017
+
+tailuzhecom upload the file tailuzhecom\test.jpg successfully       Sat Jun 24 16:30:59 2017
+
+tailuzhecom download the file tailuzhecom\M12.mp3 successfully       Sat Jun 24 16:31:07 2017
+
+tailuzhecom log out       Sat Jun 24 16:31:12 2017
+
+tailuzhecom login       Sat Jun 24 16:35:06 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Sat Jun 24 16:35:21 2017
+
+tailuzhecom cd to the path : tailuzhecom\a\       Sat Jun 24 16:35:55 2017
+
+tailuzhecom log out       Sat Jun 24 16:36:42 2017
+
+tailuzhecom login       Sat Jun 24 16:41:40 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Sat Jun 24 16:41:44 2017
+
+tailuzhecom makes directory tailuzhecom\ b       Sat Jun 24 16:41:54 2017
+
+tailuzhecom cd to the path : tailuzhecom\b\       Sat Jun 24 16:42:20 2017
+
+tailuzhecom cd to the path : tailuzhecom\       Sat Jun 24 16:42:24 2017
+
+tailuzhecom cd to the path : tailuzhecom\a\       Sat Jun 24 16:42:34 2017
+
+tailuzhecom cd to the path : tailuzhecom\       Sat Jun 24 16:42:41 2017
+
+tailuzhecom log out       Sat Jun 24 16:42:52 2017
+
+curry login       Sat Jun 24 16:47:46 2017
+
+curry upload the file curry\kd.jpg successfully       Sat Jun 24 16:47:54 2017
+
+curry get the file list in the path: curry\       Sat Jun 24 16:47:57 2017
+
+curry log out       Sat Jun 24 16:48:16 2017
+
+curry login       Sat Jun 24 16:48:40 2017
+
+curry makes directory curry\ a       Sat Jun 24 16:48:50 2017
+
+curry get the file list in the path: curry\       Sat Jun 24 16:48:54 2017
+
+curry remove directory curry\ a       Sat Jun 24 16:49:12 2017
+
+curry get the file list in the path: curry\       Sat Jun 24 16:49:17 2017
+
+curry remove file curry\ kd.jpg       Sat Jun 24 16:50:14 2017
+
+curry get the file list in the path: curry\       Sat Jun 24 16:50:16 2017
+
+curry log out       Sat Jun 24 16:50:20 2017
+
+curry login       Sat Jun 24 17:03:26 2017
+
+curry login       Sat Jun 24 17:08:21 2017
+
+curry log out       Sat Jun 24 17:08:32 2017
+
+curry login       Sat Jun 24 17:10:38 2017
+
+curry log out       Sat Jun 24 17:11:16 2017
+
+curry login       Sat Jun 24 17:12:35 2017
+
+curry log out       Sat Jun 24 17:12:56 2017
+
+curry login       Sat Jun 24 17:13:42 2017
+
+curry log out       Sat Jun 24 17:14:12 2017
+

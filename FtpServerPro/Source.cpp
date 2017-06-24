@@ -20,14 +20,13 @@
 #include <io.h>
 #include <mutex>
 #include <string.h>
+#include "server.h"
 
 #pragma comment (lib, "Ws2_32.lib")  
 
 #define bzero(a, b) memset(a, 0, b)
 #define DEFAULT_PORT "10086"  
 #define DEFAULT_BUFLEN 512  
-#define FOR(end) \
-for(int i = 0; i < end; i++)
 
 using namespace std;
 
@@ -37,20 +36,20 @@ set<string> onlineUser;
 mutex mtx;
 
 //command help
-map<string, string> help = { {"get", " getfile + [filename]     function: download file[filename] in the current path"},
-							{"user", " login + [username] + [password]        function: user login"},
-							{"send", " upload + [filename]       function: upload file[filename] in the current path"},
+map<string, string> help = { {"get", " get + [filename]     function: download file[filename] in the current path"},
+							{"user", " user + [username]        function: user login"},
+							{"send", " send + [filename]       function: upload file[filename] in the current path"},
 							{"list", " function: list the file in the current in the current path"},
 							{ "dir", " function: list the file in the current in the current path" },
 							{"quit", " function: close the ftp client you are running"},
 							{ "exit", " function: close the ftp client you are running" },
 							{ "bye", " function: close the ftp client you are running" },
-							{"register", " register + [username] + [password]      function: create a new account"},
-							{"cwd", " cd + [targetdir]     function: change the current path to target directory"},
+							{"register", " register + [username]      function: create a new account"},
+							{"cwd", " cwd + [targetdir]     function: change the current path to target directory"},
 							{"pwd", " function: print the current path"},
 							{"all", " all commands:\ncd exit getfile list login pwd quit register upload"},
-							{"rmd", " remove + [dirname]       function: remove directory"},
-							{"dele", " remove + [filename]       function: remove file"} };
+							{"rmd", " rmd + [dirname]       function: remove directory"},
+							{"dele", " dele + [filename]       function: remove file"} };
 
 
 //返回当前时间字符串
@@ -289,7 +288,7 @@ void ChangeDirectory(string &currentPath, string &targetDir, SOCKET clientSocket
 	Log(split(currentPath, "\\")[0] + " cd to the path : " + currentPath);
 }
 
-//TODO ftp规范化  mkdir rmdir rmfile
+
 //socket connection
 void Conn(SOCKET clientSocket, map<string, string> userList) {
 	int loginStatus = 0;
@@ -318,12 +317,16 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 				if (info.size() == 2)
 					info.push_back("");
 				char pass[100];
-				send(clientSocket, "331 User name okay, need password.", 100, 0);
-				recv(clientSocket, pass, 100, 0);
-				if (UserLogin(info[1], pass, userList, clientSocket, currentPath)) {
-					userName = info[1];
-					loginStatus = 1;
+				if (userList.count(info[1]) || info[1] == "anonymous") {
+					send(clientSocket, "331 User name okay, need password.", 100, 0);
+					recv(clientSocket, pass, 100, 0);
+					if (UserLogin(info[1], pass, userList, clientSocket, currentPath)) {
+						userName = info[1];
+						loginStatus = 1;
+					}
 				}
+				else
+					send(clientSocket, "220 This account isn't exist.", 100, 0);
 			}
 			else
 				send(clientSocket, "don't attempt to login more than one account in one ftp client program", 100, 0);
@@ -331,9 +334,13 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 		else if (info[0] == "register" && info.size() == 2) {     //用户注册
 			if (!loginStatus) {
 				char pass[100];
-				send(clientSocket, "331 User name okay, need password.", 100, 0);
-				recv(clientSocket, pass, 100, 0);
-				CreateUser(info[1], pass, userList, clientSocket);
+				if (!userList.count(info[1]) && info[1] != "anonymous") {
+					send(clientSocket, "331 User name okay, need password.", 100, 0);
+					recv(clientSocket, pass, 100, 0);
+					CreateUser(info[1], pass, userList, clientSocket);
+				}
+				else
+					send(clientSocket, "220 User name was used.", 100, 0);
 			}
 			else
 				send(clientSocket, "don't attempt to create a new account after logging in", 100, 0);
@@ -370,6 +377,9 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 				}
 				else if (info[0] == "help" && info.size() == 2) {  //帮助
 					send(clientSocket, help[info[1]].data(), 100, 0);
+				}
+				else if (info[0] == "all" && info.size() == 1) {
+					send(clientSocket, "USER GET SEND PWD CWD HELP ALL LIST DIR REGISTER MKD RMD DELE BYE QUIT EXIT", 100, 0);
 				}
 				else if (info[0] == "mkd" && info.size() == 2) {   //创建文件夹
 					if (!_mkdir((currentPath + info[1]).data())) {

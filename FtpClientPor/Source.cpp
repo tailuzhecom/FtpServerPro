@@ -56,6 +56,7 @@ void RecvFile(SOCKET &connectSocket, const char fileName[DEFAULT_BUFLEN]) {
 		printf("create file %s failed\n", fileName);
 		return;
 	}
+	cout << "150 Ok to receive data." << endl;
 	while (true) {
 		num = recv(connectSocket, temp, DEFAULT_BUFLEN, 0);
 		fwrite(temp, 1, num, fp);
@@ -172,7 +173,7 @@ int main()
 		if (info[0] == "file") {
 			RecvFile(ConnectSocket, info[1].data());
 		}
-		else if (info[0] == "221") {
+		else if (info[0] == "221") {   //ÍË³ö
 			cout << str << endl;
 			break;
 		}
