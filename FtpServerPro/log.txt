@@ -80,3 +80,73 @@ curry login       Sat Jun 24 17:13:42 2017
 
 curry log out       Sat Jun 24 17:14:12 2017
 
+tailuzhecom login       Wed Jun 28 15:02:16 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Wed Jun 28 15:02:17 2017
+
+tailuzhecom download the file tailuzhecom\ac.txt successfully       Wed Jun 28 15:02:35 2017
+
+tailuzhecom log out       Wed Jun 28 15:03:00 2017
+
+tailuzhecom login       Wed Jun 28 15:03:59 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Wed Jun 28 15:04:05 2017
+
+tailuzhecom download the file tailuzhecom\kd.jpg successfully       Wed Jun 28 15:04:11 2017
+
+tailuzhecom download the file tailuzhecom\M12.mp3 successfully       Wed Jun 28 15:04:16 2017
+
+tailuzhecom upload the file tailuzhecom\M12.mp3 successfully       Wed Jun 28 15:04:23 2017
+
+tailuzhecom cd to the path : tailuzhecom\a\       Wed Jun 28 15:04:33 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\a\       Wed Jun 28 15:04:35 2017
+
+tailuzhecom login       Wed Jun 28 15:08:15 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Wed Jun 28 15:08:25 2017
+
+tailuzhecom upload the file tailuzhecom\test.jpg successfully       Wed Jun 28 15:08:32 2017
+
+tailuzhecom cd to the path : tailuzhecom\       Wed Jun 28 15:08:53 2017
+
+tailuzhecom cd to the path : tailuzhecom\       Wed Jun 28 15:08:56 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Wed Jun 28 15:09:04 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Wed Jun 28 15:09:05 2017
+
+tailuzhecom log out       Wed Jun 28 15:09:25 2017
+
+tailuzhecom login       Wed Jun 28 15:12:03 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Wed Jun 28 15:12:04 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Wed Jun 28 15:12:28 2017
+
+tailuzhecom remove directory tailuzhecom\ b       Wed Jun 28 15:12:37 2017
+
+tailuzhecom remove file tailuzhecom\ test.jpg       Wed Jun 28 15:12:56 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Wed Jun 28 15:13:00 2017
+
+tailuzhecom upload the file tailuzhecom\test.jpg successfully       Wed Jun 28 15:13:05 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Wed Jun 28 15:13:06 2017
+
+tailuzhecom cd to the path : tailuzhecom\       Wed Jun 28 15:13:20 2017
+
+tailuzhecom log out       Wed Jun 28 15:13:27 2017
+
+tailuzhecom login       Wed Jun 28 15:14:37 2017
+
+curry login       Wed Jun 28 15:15:23 2017
+
+curry get the file list in the path: curry\       Wed Jun 28 15:15:26 2017
+
+tailuzhecom get the file list in the path: tailuzhecom\       Wed Jun 28 15:15:34 2017
+
+tailuzhecom log out       Wed Jun 28 15:16:01 2017
+
+curry log out       Wed Jun 28 15:16:04 2017
+

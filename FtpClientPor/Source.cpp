@@ -167,6 +167,10 @@ int main()
 		getline(cin, command);
 		LowerCommand(command);
 		send(ConnectSocket, command.data(), sizeof(command), 0);
+		recv(ConnectSocket, str, 100, 0);
+		cout << str << "\n" << endl;
+		if (strcmp("200 PORT command successful.", str))
+			continue;
 		recv(ConnectSocket, str, sizeof(str), 0);
 		cinfo = split(command, " ");
 		info = split(str, " ");

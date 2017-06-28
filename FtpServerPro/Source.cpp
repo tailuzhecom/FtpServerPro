@@ -20,7 +20,6 @@
 #include <io.h>
 #include <mutex>
 #include <string.h>
-#include "server.h"
 
 #pragma comment (lib, "Ws2_32.lib")  
 
@@ -313,6 +312,7 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 		string comStr(command);
 		info = split(command, " ");
 		if (info[0] == "user" && (info.size() == 2 || info[1] == "anonymous" && info.size() == 2)) {       //登录
+			send(clientSocket, "200 PORT command successful.", 100, 0);
 			if (!loginStatus) {
 				if (info.size() == 2)
 					info.push_back("");
@@ -332,6 +332,7 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 				send(clientSocket, "don't attempt to login more than one account in one ftp client program", 100, 0);
 		}
 		else if (info[0] == "register" && info.size() == 2) {     //用户注册
+			send(clientSocket, "200 PORT command successful.", 100, 0);
 			if (!loginStatus) {
 				char pass[100];
 				if (!userList.count(info[1]) && info[1] != "anonymous") {
@@ -346,6 +347,7 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 				send(clientSocket, "don't attempt to create a new account after logging in", 100, 0);
 		}
 		else if ((info[0] == "exit" || info[0] == "quit" || info[0] == "bye") && info.size() == 1) {   //用户退出
+			send(clientSocket, "200 PORT command successful.", 100, 0);
 			send(clientSocket, "221 Goodbye.", 100, 0);
 			if (userName != "")
 				Log(userName + " log out");
@@ -355,9 +357,11 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 		else {
 			if (loginStatus) {   //是否已登录
 				if (info[0] == "get" && info.size() == 2) {    //下载
+					send(clientSocket, "200 PORT command successful.", 100, 0);
 					SendFile(clientSocket, currentPath + info[1]);
 				}
 				else if (info[0] == "send" && info.size() == 2) {    //上传
+					send(clientSocket, "200 PORT command successful.", 100, 0);
 					send(clientSocket, "150 Ok to send data.", 100, 0);
 					char temp[105];
 					recv(clientSocket, temp, 100, 0);
@@ -367,21 +371,30 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 						send(clientSocket, "upload failed", 100, 0);
 				}
 				else if ((info[0] == "list" || info[0] == "dir") && info.size() == 1) {   //获取文件列表
+					send(clientSocket, "200 PORT command successful.", 100, 0);
 					GetFileList(clientSocket, currentPath);
 				}
 				else if (info[0] == "pwd" && info.size() == 1) {  //打印当前目录
+					send(clientSocket, "200 PORT command successful.", 100, 0);
 					send(clientSocket, currentPath.data(), 100, 0);
 				}
 				else if (info[0] == "cwd" && info.size() == 2) {   //改变当前目录
+					send(clientSocket, "200 PORT command successful.", 100, 0);
 					ChangeDirectory(currentPath, info[1], clientSocket);
 				}
 				else if (info[0] == "help" && info.size() == 2) {  //帮助
-					send(clientSocket, help[info[1]].data(), 100, 0);
+					send(clientSocket, "200 PORT command successful.", 100, 0);
+					if (!help[info[1]].empty())
+						send(clientSocket, help[info[1]].data(), 100, 0);
+					else
+						send(clientSocket, "This command isn't exist", 100, 0);
 				}
 				else if (info[0] == "all" && info.size() == 1) {
+					send(clientSocket, "200 PORT command successful.", 100, 0);
 					send(clientSocket, "USER GET SEND PWD CWD HELP ALL LIST DIR REGISTER MKD RMD DELE BYE QUIT EXIT", 100, 0);
 				}
 				else if (info[0] == "mkd" && info.size() == 2) {   //创建文件夹
+					send(clientSocket, "200 PORT command successful.", 100, 0);
 					if (!_mkdir((currentPath + info[1]).data())) {
 						Log(userName + " makes directory " + currentPath + " " + info[1]);
 						send(clientSocket, ("521 \"" + currentPath + info[1] + "\" directory created").data(), 100, 0);
@@ -390,6 +403,7 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 						send(clientSocket, "521 taking no action.", 100, 0);
 				}
 				else if (info[0] == "dele" && info.size() == 2) {       //删除文件
+					send(clientSocket, "200 PORT command successful.", 100, 0);
 					if (!remove((currentPath + info[1]).data())) {
 						Log(userName + " remove file " + currentPath + " " + info[1]);
 						send(clientSocket, "250 Delete file success.", 100, 0);
@@ -398,6 +412,7 @@ void Conn(SOCKET clientSocket, map<string, string> userList) {
 						send(clientSocket, "500 No such file.", 100, 0);
 				}
 				else if (info[0] == "rmd" && info.size() == 2) {     //删除文件夹  _rmdir 和 remove 返回0时代表删除成功
+					send(clientSocket, "200 PORT command successful.", 100, 0);
 					if (!_rmdir((currentPath + info[1]).data())) {
 						Log(userName + " remove directory " + currentPath + " " + info[1]);
 						send(clientSocket, "250 Remove directory success.", 100, 0);
